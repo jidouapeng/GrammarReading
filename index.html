@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>语法阶梯学练台 · 知识库 / 闯关 / 打印 / 学情分析</title>
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/print.css">
+</head>
+<body>
+
+<!-- 登录门禁：打开应用先选「学员登录」或「教师入口」 -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="lg-brand">
+      <div class="logo lg">阶</div>
+      <div>
+        <h1>语法阶梯学练台</h1>
+        <p>按阶梯学语法 · 打印讲义 · 收答案 · 学情分析</p>
+      </div>
+    </div>
+
+    <div class="lg-tabs">
+      <button class="lg-tab on" data-mode="student">🎓 学员登录</button>
+      <button class="lg-tab" data-mode="teacher">👩‍🏫 教师入口</button>
+    </div>
+
+    <div class="lg-body">
+      <label class="lg-label" id="lgUserLabel">用户名</label>
+      <input class="lg-input" id="lgUser" type="text" maxlength="24" placeholder="请输入用户名" autocomplete="username">
+      <label class="lg-label" id="lgPassLabel">密码</label>
+      <input class="lg-input" id="lgPass" type="password" maxlength="64" placeholder="请输入密码" autocomplete="current-password">
+      <label class="lg-check"><input type="checkbox" id="lgRemember">在这台电脑上保持登录（7 天）</label>
+      <div class="lg-msg" id="lgMsg"></div>
+      <button class="btn primary lg-btn" id="lgBtn">登录</button>
+    </div>
+
+    <div class="lg-foot">
+      <span class="lg-tip" id="lgHint">还没有账号？请向老师索取用户名与密码。</span>
+      <span class="lg-tip act" id="lgImport">⬆ 导入账号文件</span>
+      <input type="file" id="lgFile" accept=".json" hidden>
+    </div>
+    <div class="lg-foot2">
+      <span class="lg-tip act" id="lgRecover">🔑 教师忘记口令？用备份文件恢复</span>
+      <input type="file" id="lgRecoverFile" accept=".json" hidden>
+    </div>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand-row">
+      <div class="logo">阶</div>
+      <div class="brand-txt">
+        <h1>语法阶梯学练台</h1>
+        <p id="brandSub">上传知识包 → 按阶梯闯关 → 分阶打印 → 收答案 → 学情分析 → 针对性出卷</p>
+      </div>
+      <div class="head-right">
+        <span class="who" id="whoami"></span>
+        <label class="packsel">
+          <select id="packSelect"></select>
+        </label>
+        <button class="btn primary sm" id="btnImport">📥 导入知识包</button>
+        <button class="btn ghost sm" id="btnStudentMode">🎓 学生模式</button>
+        <button class="btn ghost sm" id="btnBackup">💾 备份</button>
+        <button class="btn ghost sm" id="btnAdmin">⚙️ 教师管理</button>
+        <button class="btn ghost sm" id="btnLogout">🚪 退出</button>
+      </div>
+    </div>
+    <nav class="tabs">
+      <button class="tab on" data-v="lib">📚 知识库 <span class="badge" id="tabPack">0</span></button>
+      <button class="tab" data-v="study">🪜 阶梯学习</button>
+      <button class="tab" data-v="print">🖨 打印</button>
+      <button class="tab" data-v="collect">✍️ 收答案 <span class="badge" id="tabRec">0</span></button>
+      <button class="tab" data-v="analysis">📊 学情分析</button>
+      <button class="tab" data-v="practice">🎯 针对性练习</button>
+    </nav>
+  </div>
+</div>
+
+<main class="app">
+  <section class="view on" id="v-lib"></section>
+  <section class="view" id="v-study"></section>
+  <section class="view" id="v-print"></section>
+  <section class="view" id="v-collect"></section>
+  <section class="view" id="v-analysis"></section>
+  <section class="view" id="v-practice"></section>
+</main>
+
+<!-- 打印容器：独立于 .app，打印时独占页面（屏幕隐藏） -->
+<div id="printRoot" class="print-root"></div>
+
+<!-- 弹窗 -->
+<div class="mask" id="mask">
+  <div class="modal" id="modal"></div>
+</div>
+
+<!-- 学生模式覆盖层 -->
+<div class="student-mode" id="studentMode" hidden>
+  <div class="sm-bar">
+    <b id="smTitle">学生作答</b>
+    <label class="sm-name">姓名
+      <input id="smNameInput" type="text" maxlength="24" placeholder="请签上姓名" autocomplete="off"
+        oninput="UI.smNameInput(this.value)" onchange="UI.smCommitName()">
+    </label>
+    <div class="sm-bar-right">
+      <span id="smProgress" class="chip u">0 / 0</span>
+      <button class="btn ghost sm" id="smDownload">⬇ 下载答案</button>
+      <button class="btn ok sm" id="smSubmit">交卷</button>
+      <button class="btn ghost sm" id="smExit">退出学生模式</button>
+    </div>
+  </div>
+  <div class="sm-body" id="smBody"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/seed-md.js"></script>
+<script src="js/seed-pack2.js"></script>
+<script src="js/seed-md3.js"></script>
+<script src="js/seed-md4.js"></script>
+<script src="js/seed-md5.js"></script>
+<script src="js/parser.js"></script>
+<script src="js/seed.js"></script>
+<script src="js/store.js"></script>
+<script src="js/analysis.js"></script>
+<script src="js/radar.js"></script>
+<script src="js/practice.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>
